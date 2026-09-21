@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>测测你是哪位中国古代人物</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    font-family:"Songti SC","STSong","SimSun","Noto Serif SC",serif;
+    background:#f5efe2;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(196,168,120,.18), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(178,60,50,.10), transparent 50%);
+    color:#3a2f22;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:0;
+  }
+  #app{
+    width:100%;
+    max-width:560px;
+    min-height:100vh;
+    background:rgba(252,249,241,.92);
+    box-shadow:0 0 40px rgba(120,95,60,.15);
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    overflow:hidden;
+  }
+  .screen{display:none;flex:1;flex-direction:column;padding:28px 22px 34px;}
+  .screen.active{display:flex;}
+
+  /* ---------- 首页 ---------- */
+  .seal{
+    width:64px;height:64px;margin:18px auto 14px;
+    border:2.5px solid #b23c32;border-radius:6px;
+    color:#b23c32;font-size:15px;line-height:1.05;
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;font-weight:700;letter-spacing:1px;
+    transform:rotate(-4deg);
+    background:rgba(178,60,50,.05);
+  }
+  .home-title{font-size:27px;text-align:center;letter-spacing:3px;font-weight:700;color:#2c2318;margin-bottom:10px;}
+  .home-sub{font-size:13.5px;text-align:center;color:#8a7a5f;letter-spacing:1px;line-height:1.9;margin-bottom:26px;}
+  .divider{
+    width:80px;height:1px;background:linear-gradient(90deg,transparent,#c4a878,transparent);
+    margin:0 auto 26px;
+  }
+  .home-card{
+    background:#fffdf7;border:1px solid #e8dcc4;border-radius:14px;
+    padding:18px 18px 16px;margin-bottom:16px;
+    box-shadow:0 2px 10px rgba(150,120,80,.06);
+  }
+  .home-card h3{font-size:14.5px;color:#b23c32;letter-spacing:2px;margin-bottom:10px;font-weight:700;}
+  .home-card p{font-size:13.5px;line-height:2;color:#5c4e3c;}
+  .dim-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px;}
+  .dim-tag{
+    font-size:12px;padding:4px 11px;border-radius:20px;
+    background:#f3ead8;color:#7a6748;border:1px solid #e5d7bb;
+  }
+  .btn-main{
+    width:100%;padding:16px;border:none;border-radius:12px;
+    background:linear-gradient(135deg,#b23c32,#8f2e26);
+    color:#fff8ec;font-size:17px;letter-spacing:4px;font-family:inherit;
+    font-weight:700;cursor:pointer;margin-top:auto;
+    box-shadow:0 6px 18px rgba(178,60,50,.28);
+    transition:transform .15s,box-shadow .15s;
+  }
+  .btn-main:active{transform:scale(.98);box-shadow:0 3px 10px rgba(178,60,50,.24);}
+  .notice{font-size:11.5px;color:#a89a80;text-align:center;margin-top:14px;line-height:1.8;}
+
+  /* ---------- 答题页 ---------- */
+  .quiz-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .quiz-idx{font-size:13px;color:#b23c32;letter-spacing:2px;font-weight:700;}
+  .quiz-cat{font-size:12px;color:#a8967a;letter-spacing:1px;}
+  .progress-wrap{height:5px;background:#ece2cd;border-radius:4px;overflow:hidden;margin-bottom:26px;}
+  .progress-bar{height:100%;background:linear-gradient(90deg,#c4a878,#b23c32);border-radius:4px;transition:width .3s ease;width:0;}
+  .q-text{font-size:19px;line-height:1.75;color:#2c2318;font-weight:700;margin-bottom:22px;letter-spacing:.5px;}
+  .opts{display:flex;flex-direction:column;gap:12px;}
+  .opt{
+    display:flex;align-items:flex-start;gap:11px;
+    padding:15px 16px;border-radius:12px;
+    background:#fffdf7;border:1.5px solid #e8dcc4;
+    font-size:14.5px;line-height:1.65;color:#4a3e2e;
+    cursor:pointer;transition:all .18s;font-family:inherit;text-align:left;
+  }
+  .opt:active{transform:scale(.985);}
+  .opt:hover{border-color:#c4a878;background:#fffaf0;}
+  .opt.sel{border-color:#b23c32;background:#fdf3f1;box-shadow:0 2px 10px rgba(178,60,50,.12);}
+  .opt-key{
+    flex:0 0 22px;height:22px;border-radius:50%;
+    background:#f0e6d2;color:#8a7654;
+    font-size:12px;display:flex;align-items:center;justify-content:center;
+    font-weight:700;margin-top:1px;
+  }
+  .opt.sel .opt-key{background:#b23c32;color:#fff;}
+  .quiz-bottom{display:flex;gap:12px;margin-top:auto;padding-top:26px;}
+  .btn-ghost{
+    flex:1;padding:13px;border-radius:11px;background:transparent;
+    border:1.5px solid #d8c9a8;color:#8a7654;font-size:14.5px;
+    font-family:inherit;letter-spacing:2px;cursor:pointer;transition:all .15s;
+  }
+  .btn-ghost:disabled{opacity:.35;cursor:not-allowed;}
+  .btn-ghost:not(:disabled):active{background:#f3ead8;}
+
+  /* ---------- 加载页 ---------- */
+  #screen-loading{align-items:center;justify-content:center;text-align:center;}
+  .loading-ring{
+    width:66px;height:66px;border-radius:50%;
+    border:3px solid #ece2cd;border-top-color:#b23c32;
+    animation:spin 1s linear infinite;margin-bottom:24px;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-text{font-size:15px;color:#8a7a5f;letter-spacing:2px;line-height:2;}
+
+  /* ---------- 结果页 ---------- */
+  .result-head{text-align:center;margin-bottom:18px;}
+  .result-label{font-size:12.5px;color:#a8967a;letter-spacing:4px;margin-bottom:12px;}
+  .result-name{font-size:32px;font-weight:700;color:#b23c32;letter-spacing:5px;margin-bottom:8px;}
+  .result-meta{font-size:13px;color:#8a7a5f;letter-spacing:2px;}
+  .result-meta span{margin:0 7px;}
+  .match-badge{
+    display:inline-block;margin-top:12px;padding:5px 16px;border-radius:20px;
+    background:linear-gradient(135deg,#fdf3f1,#f8e8e4);
+    border:1px solid #e8c9c2;color:#b23c32;
+    font-size:12.5px;letter-spacing:1.5px;
+  }
+  .radar-box{
+    background:#fffdf7;border:1px solid #e8dcc4;border-radius:14px;
+    padding:14px 10px 6px;margin-bottom:14px;
+    box-shadow:0 2px 10px rgba(150,120,80,.06);
+  }
+  .info-card{
+    background:#fffdf7;border:1px solid #e8dcc4;border-radius:14px;
+    padding:16px 18px;margin-bottom:12px;
+    box-shadow:0 2px 10px rgba(150,120,80,.06);
+  }
+  .info-card h4{
+    font-size:13px;color:#b23c32;letter-spacing:2.5px;
+    margin-bottom:9px;font-weight:700;display:flex;align-items:center;gap:7px;
+  }
+  .info-card h4::before{content:"";width:3px;height:13px;background:#b23c32;border-radius:2px;}
+  .info-card p{font-size:14px;line-height:1.95;color:#4a3e2e;}
+  .traits{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px;}
+  .trait{font-size:12px;padding:4px 12px;border-radius:16px;background:#f3ead8;color:#7a6748;border:1px solid #e5d7bb;}
+  .also-list{margin-top:4px;}
+  .also-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:9px 0;border-bottom:1px dashed #ece2cd;font-size:13.5px;color:#5c4e3c;
+  }
+  .also-item:last-child{border-bottom:none;}
+  .also-pct{font-size:12px;color:#b23c32;font-weight:700;}
+  .result-actions{display:flex;gap:12px;margin-top:8px;}
+  .btn-half{
+    flex:1;padding:14px;border-radius:11px;font-size:14.5px;
+    font-family:inherit;letter-spacing:2px;cursor:pointer;transition:all .15s;
+  }
+  .btn-half.primary{
+    border:none;background:linear-gradient(135deg,#b23c32,#8f2e26);
+    color:#fff8ec;font-weight:700;box-shadow:0 5px 15px rgba(178,60,50,.25);
+  }
+  .btn-half.secondary{
+    background:transparent;border:1.5px solid #d8c9a8;color:#8a7654;
+  }
+  .btn-half:active{transform:scale(.98);}
+  .disclaimer{font-size:11px;color:#b0a48c;text-align:center;line-height:1.9;margin-top:14px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 首页 -->
+  <section class="screen active" id="screen-home">
+    <div class="seal">人物<br>性格</div>
+    <h1 class="home-title">你是哪位古人</h1>
+    <p class="home-sub">36 道生活化选择题<br>匹配你的历史性格镜像</p>
+    <div class="divider"></div>
+
+    <div class="home-card">
+      <h3>测 评 说 明</h3>
+      <p>
+        本测试从 8 个性格维度出发，<br>
+        在 50 位中国古代知名人物中，<br>
+        为你找出性格最接近的那一位。
+      </p>
+      <div class="dim-list">
+        <span class="dim-tag">外向活力</span>
+        <span class="dim-tag">理性逻辑</span>
+        <span class="dim-tag">果断冒险</span>
+        <span class="dim-tag">刚强坚持</span>
+        <span class="dim-tag">理想主义</span>
+        <span class="dim-tag">独立自主</span>
+        <span class="dim-tag">乐观豁达</span>
+        <span class="dim-tag">守序传统</span>
+      </div>
+    </div>
+
+    <div class="home-card">
+      <h3>人 物 阵 容</h3>
+      <p>
+        男性 35 位：秦始皇、项羽、李白、苏轼、岳飞、王阳明、和珅……<br>
+        女性 15 位：武则天、李清照、花木兰、妇好、上官婉儿……
+      </p>
+    </div>
+
+    <button class="btn-main" onclick="startQuiz()">开 始 测 试</button>
+    <p class="notice">约 3—5 分钟 · 趣味娱乐用途<br>结果不代表专业心理评估</p>
+  </section>
+
+  <!-- 答题页 -->
+  <section class="screen" id="screen-quiz">
+    <div class="quiz-top">
+      <span class="quiz-idx" id="quizIdx">01 / 36</span>
+      <span class="quiz-cat" id="quizCat">外向活力</span>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="q-text" id="qText"></div>
+    <div class="opts" id="opts"></div>
+    <div class="quiz-bottom">
+      <button class="btn-ghost" id="btnPrev" onclick="prevQuestion()">上 一 题</button>
+    </div>
+  </section>
+
+  <!-- 加载页 -->
+  <section class="screen" id="screen-loading">
+    <div class="loading-ring"></div>
+    <div class="loading-text">
+      正在穿越历史长河<br>
+      寻找与你最像的那个人……
+    </div>
+  </section>
+
+  <!-- 结果页 -->
+  <section class="screen" id="screen-result">
+    <div class="result-head">
+      <div class="result-label">你 最 像</div>
+      <div class="result-name" id="rName">—</div>
+      <div class="result-meta" id="rMeta"></div>
+      <div class="match-badge" id="rMatch">匹配度 —</div>
+    </div>
+
+    <div class="radar-box" id="radarBox"></div>
+
+    <div class="info-card">
+      <h4>性 格 特 征</h4>
+      <div class="traits" id="rTraits"></div>
+    </div>
+
+    <div class="info-card">
+      <h4>人 生 成 就</h4>
+      <p id="rAchieve"></p>
+    </div>
+
+    <div class="info-card">
+      <h4>你 的 性 格 画 像</h4>
+      <p id="rDesc"></p>
+    </div>
+
+    <div class="info-card">
+      <h4>其 他 相 似 人 物</h4>
+      <div class="also-list" id="rAlso"></div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-half secondary" onclick="restart()">再 测 一 次</button>
+      <button class="btn-half primary" onclick="shareResult()">分 享 结 果</button>
+    </div>
+    <p class="disclaimer">
+      本测试为趣味娱乐用途，结果不代表专业心理评估，<br>也不构成任何现实建议。
+    </p>
+  </section>
+
+</div>
+
+<script>
+/* =========================================================
+   一、维度定义
+   ========================================================= */
+const DIMS = ['E','R','A','G','V','D','O','S'];
+const DIM_CN = {
+  E:'外向活力', R:'理性逻辑', A:'果断冒险', G:'刚强坚持',
+  V:'理想主义', D:'独立自主', O:'乐观豁达', S:'守序传统'
+};
+const DIM_SHORT = {
+  E:'外向', R:'理性', A:'果断', G:'刚强',
+  V:'理想', D:'独立', O:'乐观', S:'守序'
+};
+
+/* =========================================================
+   二、36 道题目
+   ========================================================= */
+const QUESTIONS = [
+  /* ---- 1-4 外向活力 E ---- */
+  {cat:'外向活力', q:'周末你更想怎么过？', opts:[
+    {t:'约朋友出去吃饭、逛街、玩', s:{E:3}},
+    {t:'在家追剧、看书、打游戏', s:{E:1}},
+    {t:'看心情，有人约就出去，没人约就宅着', s:{E:2}},
+    {t:'参加陌生人多的活动，认识新朋友', s:{E:3}}
+  ]},
+  {cat:'外向活力', q:'在聚会上，你通常是？', opts:[
+    {t:'主动和很多人聊天，很自然地成为焦点', s:{E:3}},
+    {t:'只和熟悉的人待在一起', s:{E:1}},
+    {t:'观察大家，偶尔插几句话', s:{E:2}},
+    {t:'找个角落做自己的事，等别人来找我', s:{E:0}}
+  ]},
+  {cat:'外向活力', q:'接到陌生号码来电，你会？', opts:[
+    {t:'立刻接，看看是谁', s:{E:3}},
+    {t:'犹豫一下再接', s:{E:2}},
+    {t:'不接，等对方留言或发消息', s:{E:1}},
+    {t:'直接挂掉', s:{E:0}}
+  ]},
+  {cat:'外向活力', q:'你更喜欢的休息方式是？', opts:[
+    {t:'和朋友一起出去嗨', s:{E:3}},
+    {t:'一个人安静地待着', s:{E:1}},
+    {t:'和家人一起看电视、聊聊天', s:{E:2}},
+    {t:'参加社交活动，认识新朋友', s:{E:3}}
+  ]},
+
+  /* ---- 5-8 理性逻辑 R ---- */
+  {cat:'理性逻辑', q:'做重要决定时，你更依赖？', opts:[
+    {t:'详细分析利弊，列清单对比', s:{R:3}},
+    {t:'直觉和感觉，哪个顺眼选哪个', s:{R:1}},
+    {t:'咨询身边人的意见', s:{R:2}},
+    {t:'先做了再说，边做边调整', s:{R:0}}
+  ]},
+  {cat:'理性逻辑', q:'朋友向你倾诉烦恼，你会？', opts:[
+    {t:'帮他分析问题，给出具体建议', s:{R:3}},
+    {t:'安慰他，表达理解', s:{R:1}},
+    {t:'陪他一起吐槽，出出气', s:{R:2}},
+    {t:'转移话题，让他先开心起来', s:{R:1}}
+  ]},
+  {cat:'理性逻辑', q:'看到一篇观点很激烈的文章，你会？', opts:[
+    {t:'查找资料，验证它说得对不对', s:{R:3}},
+    {t:'凭感觉判断对错', s:{R:1}},
+    {t:'先看评论区大家怎么说', s:{R:2}},
+    {t:'不关心，直接划走', s:{R:0}}
+  ]},
+  {cat:'理性逻辑', q:'你更认同哪句话？', opts:[
+    {t:'凡事都要讲道理', s:{R:3}},
+    {t:'跟着感觉走，准没错', s:{R:1}},
+    {t:'情比理更重要', s:{R:0}},
+    {t:'具体情况具体分析', s:{R:2}}
+  ]},
+
+  /* ---- 9-12 果断冒险 A ---- */
+  {cat:'果断冒险', q:'面对一个难得但风险很高的机会，你会？', opts:[
+    {t:'立刻抓住，冒险一试', s:{A:3}},
+    {t:'仔细评估后再决定', s:{A:1}},
+    {t:'问问别人要不要一起', s:{A:2}},
+    {t:'放弃，太冒险了', s:{A:0}}
+  ]},
+  {cat:'果断冒险', q:'在餐厅点菜时，你通常？', opts:[
+    {t:'很快决定，点自己常吃的', s:{A:2}},
+    {t:'犹豫很久，不知道选什么', s:{A:1}},
+    {t:'尝试没吃过的新菜', s:{A:3}},
+    {t:'让别人点，自己随便', s:{A:0}}
+  ]},
+  {cat:'果断冒险', q:'旅行时，你更喜欢？', opts:[
+    {t:'说走就走，不做计划', s:{A:3}},
+    {t:'做好详细攻略，按表执行', s:{A:1}},
+    {t:'定好机票酒店，其他随缘', s:{A:2}},
+    {t:'跟团，不用自己操心', s:{A:0}}
+  ]},
+  {cat:'果断冒险', q:'如果工作或学习中出现失误，你会？', opts:[
+    {t:'立刻承认并想办法补救', s:{A:3}},
+    {t:'先瞒着，看看能不能自己解决', s:{A:1}},
+    {t:'找别人帮忙一起处理', s:{A:2}},
+    {t:'焦虑很久，但迟迟不行动', s:{A:0}}
+  ]},
+
+  /* ---- 13-16 刚强坚持 G ---- */
+  {cat:'刚强坚持', q:'当你和别人意见不合时，你会？', opts:[
+    {t:'坚持自己的观点，据理力争', s:{G:3}},
+    {t:'尽量说服对方', s:{G:2}},
+    {t:'妥协一下，避免冲突', s:{G:1}},
+    {t:'算了，听对方的', s:{G:0}}
+  ]},
+  {cat:'刚强坚持', q:'遇到很大的困难，你的第一反应是？', opts:[
+    {t:'绝不放弃，想尽办法克服', s:{G:3}},
+    {t:'先休息一下，缓过来再继续', s:{G:2}},
+    {t:'找人帮忙', s:{G:1}},
+    {t:'考虑放弃，换条路走', s:{G:0}}
+  ]},
+  {cat:'刚强坚持', q:'对于自己设定的目标，你？', opts:[
+    {t:'一旦设定，就一定要完成', s:{G:3}},
+    {t:'会坚持，但也会根据情况调整', s:{G:2}},
+    {t:'经常换目标', s:{G:1}},
+    {t:'没什么明确目标', s:{G:0}}
+  ]},
+  {cat:'刚强坚持', q:'别人当面批评你，你会？', opts:[
+    {t:'不服气，当场就想反驳', s:{G:3}},
+    {t:'表面接受，心里不服', s:{G:2}},
+    {t:'认真反思，有则改之', s:{G:1}},
+    {t:'很受伤，开始怀疑自己', s:{G:0}}
+  ]},
+
+  /* ---- 17-20 理想主义 V ---- */
+  {cat:'理想主义', q:'选择工作时，你更看重？', opts:[
+    {t:'是否对社会有意义', s:{V:3}},
+    {t:'薪资和稳定性', s:{V:1}},
+    {t:'自己是否感兴趣', s:{V:2}},
+    {t:'能否带来名声和地位', s:{V:0}}
+  ]},
+  {cat:'理想主义', q:'你更愿意把时间花在？', opts:[
+    {t:'追求自己的梦想', s:{V:3}},
+    {t:'赚钱和享受生活', s:{V:1}},
+    {t:'陪伴家人朋友', s:{V:2}},
+    {t:'学习实用技能', s:{V:0}}
+  ]},
+  {cat:'理想主义', q:'看到不公平的事，你会？', opts:[
+    {t:'站出来发声', s:{V:3}},
+    {t:'心里不满，但不会说出来', s:{V:2}},
+    {t:'觉得正常，社会就是这样', s:{V:1}},
+    {t:'不关我的事', s:{V:0}}
+  ]},
+  {cat:'理想主义', q:'你更相信？', opts:[
+    {t:'人应该有更高的精神追求', s:{V:3}},
+    {t:'物质基础最重要', s:{V:0}},
+    {t:'物质和精神要平衡', s:{V:2}},
+    {t:'过好每一天就行', s:{V:1}}
+  ]},
+
+  /* ---- 21-24 独立自主 D ---- */
+  {cat:'独立自主', q:'遇到问题时，你更倾向于？', opts:[
+    {t:'自己解决，尽量不麻烦别人', s:{D:3}},
+    {t:'先自己试试，不行再求助', s:{D:2}},
+    {t:'直接找别人帮忙', s:{D:1}},
+    {t:'希望有人主动来帮我', s:{D:0}}
+  ]},
+  {cat:'独立自主', q:'你更喜欢哪种工作方式？', opts:[
+    {t:'独立完成，自己掌控节奏', s:{D:3}},
+    {t:'团队合作，分工明确', s:{D:1}},
+    {t:'有人指导，跟着做就好', s:{D:0}},
+    {t:'自由职业，自己安排一切', s:{D:3}}
+  ]},
+  {cat:'独立自主', q:'在亲密关系中，你更看重？', opts:[
+    {t:'保持各自的自我空间', s:{D:3}},
+    {t:'亲密无间，什么都分享', s:{D:1}},
+    {t:'互相依赖，彼此需要', s:{D:0}},
+    {t:'共同成长，一起变好', s:{D:2}}
+  ]},
+  {cat:'独立自主', q:'做决定时，你？', opts:[
+    {t:'自己拿主意，做完不后悔', s:{D:3}},
+    {t:'参考别人意见，但最终自己决定', s:{D:2}},
+    {t:'希望别人帮我拿主意', s:{D:1}},
+    {t:'听父母或伴侣的', s:{D:0}}
+  ]},
+
+  /* ---- 25-28 乐观豁达 O ---- */
+  {cat:'乐观豁达', q:'面对未来，你通常？', opts:[
+    {t:'充满信心，觉得会越来越好', s:{O:3}},
+    {t:'走一步看一步', s:{O:2}},
+    {t:'有些担忧，但还能应对', s:{O:1}},
+    {t:'经常焦虑，觉得前途未卜', s:{O:0}}
+  ]},
+  {cat:'乐观豁达', q:'事情搞砸了，你会？', opts:[
+    {t:'笑笑，下次再来', s:{O:3}},
+    {t:'郁闷一阵，然后放下', s:{O:2}},
+    {t:'自责很久', s:{O:1}},
+    {t:'觉得都是别人的错', s:{O:0}}
+  ]},
+  {cat:'乐观豁达', q:'你更容易记住？', opts:[
+    {t:'开心的事', s:{O:3}},
+    {t:'不开心的事', s:{O:0}},
+    {t:'都差不多', s:{O:2}},
+    {t:'看情况', s:{O:1}}
+  ]},
+  {cat:'乐观豁达', q:'别人开玩笑损你，你会？', opts:[
+    {t:'跟着一起笑', s:{O:3}},
+    {t:'有点不舒服，但不会说', s:{O:2}},
+    {t:'当场翻脸', s:{O:0}},
+    {t:'表面没事，记在心里', s:{O:1}}
+  ]},
+
+  /* ---- 29-32 守序传统 S ---- */
+  {cat:'守序传统', q:'对于规则，你的态度是？', opts:[
+    {t:'规则就是用来遵守的', s:{S:3}},
+    {t:'大部分遵守，偶尔变通', s:{S:2}},
+    {t:'规则不合理就该打破', s:{S:1}},
+    {t:'不喜欢被规则束缚', s:{S:0}}
+  ]},
+  {cat:'守序传统', q:'做事时，你更倾向于？', opts:[
+    {t:'按传统方式做，稳妥', s:{S:3}},
+    {t:'尝试新方法', s:{S:1}},
+    {t:'看情况，哪种有效用哪种', s:{S:2}},
+    {t:'喜欢颠覆常规', s:{S:0}}
+  ]},
+  {cat:'守序传统', q:'在公共场合，你会？', opts:[
+    {t:'注意言行，符合礼仪', s:{S:3}},
+    {t:'比较随意，但不影响别人', s:{S:2}},
+    {t:'想怎样就怎样', s:{S:1}},
+    {t:'故意与众不同', s:{S:0}}
+  ]},
+  {cat:'守序传统', q:'对于长辈的意见，你？', opts:[
+    {t:'很尊重，基本会听', s:{S:3}},
+    {t:'会参考，但自己做决定', s:{S:2}},
+    {t:'觉得过时了，不太听', s:{S:1}},
+    {t:'完全不理', s:{S:0}}
+  ]},
+
+  /* ---- 33-36 综合情境 ---- */
+  {cat:'综合情境', q:'你理想中的生活是？', opts:[
+    {t:'功成名就，受人敬仰', s:{E:2, A:2, V:1}},
+    {t:'平淡安稳，家庭幸福', s:{S:2, O:1}},
+    {t:'自由自在，走遍世界', s:{D:3, A:2, E:1}},
+    {t:'为理想奋斗，改变世界', s:{V:3, G:2, E:1}}
+  ]},
+  {cat:'综合情境', q:'朋友眼中的你更像？', opts:[
+    {t:'开心果，气氛担当', s:{E:3, O:2}},
+    {t:'智囊，理性冷静', s:{R:3, D:2}},
+    {t:'老好人，温柔体贴', s:{S:2, O:1}},
+    {t:'独行侠，很有个性', s:{D:3, G:2}}
+  ]},
+  {cat:'综合情境', q:'如果只能选一种品质，你选？', opts:[
+    {t:'勇敢', s:{A:3, G:2}},
+    {t:'智慧', s:{R:3, D:2}},
+    {t:'善良', s:{V:2, O:1}},
+    {t:'忠诚', s:{S:2, G:1}}
+  ]},
+  {cat:'综合情境', q:'你更害怕？', opts:[
+    {t:'平庸一生，什么都没留下', s:{V:3, A:2}},
+    {t:'失去自由，被束缚', s:{D:3}},
+    {t:'被孤立，没人理解', s:{E:2}},
+    {t:'失败，被人看不起', s:{G:2, R:1}}
+  ]}
+];
+
+/* =========================================================
+   三、50 位人物数据
+   ========================================================= */
+const CHARACTERS = [
+  {id:1,  name:'秦始皇嬴政', gender:'男', dynasty:'秦朝', traits:['雄才大略','刚毅果决','多疑专断','好大喜功'],
+   achieve:'统一六国，建立中国第一个中央集权帝国，推行郡县制、统一度量衡与文字。',
+   d:{E:4,R:5,A:5,G:5,V:4,D:5,O:3,S:4}},
+  {id:2,  name:'项羽', gender:'男', dynasty:'秦末', traits:['豪迈霸气','重情重义','刚愎自用','优柔寡断'],
+   achieve:'巨鹿之战破釜沉舟，自称西楚霸王，中国军事史上"勇战派"代表人物。',
+   d:{E:5,R:2,A:5,G:5,V:5,D:4,O:3,S:2}},
+  {id:3,  name:'刘邦', gender:'男', dynasty:'西汉', traits:['豁达大度','知人善任','市井气重','能屈能伸'],
+   achieve:'建立汉朝，开创"布衣天子"先例，奠定汉民族基业。',
+   d:{E:5,R:3,A:4,G:3,V:3,D:4,O:5,S:2}},
+  {id:4,  name:'韩信', gender:'男', dynasty:'西汉', traits:['忍辱负重','隐忍坚毅','居功自傲','不懂急流勇退'],
+   achieve:'被誉为"兵仙"，助刘邦定天下，垓下之战击败项羽。',
+   d:{E:3,R:5,A:4,G:5,V:4,D:5,O:2,S:3}},
+  {id:5,  name:'东方朔', gender:'男', dynasty:'西汉', traits:['滑稽幽默','放荡不羁','机智善辩','嫉恶如仇'],
+   achieve:'汉武帝时期著名辞赋家，以诙谐讽谏著称，被后世视为"另类奇才"。',
+   d:{E:5,R:4,A:4,G:2,V:3,D:5,O:5,S:1}},
+  {id:6,  name:'苏武', gender:'男', dynasty:'西汉', traits:['坚贞不屈','忠义刚烈'],
+   achieve:'出使匈奴被扣十九年，北海牧羊持节不屈，成为民族气节的象征。',
+   d:{E:2,R:3,A:3,G:5,V:5,D:5,O:3,S:5}},
+  {id:7,  name:'司马迁', gender:'男', dynasty:'西汉', traits:['坚韧隐忍','执着无畏'],
+   achieve:'忍辱负重完成《史记》，中国第一部纪传体通史，被誉为"史家之绝唱"。',
+   d:{E:2,R:5,A:4,G:5,V:5,D:5,O:2,S:4}},
+  {id:8,  name:'曹操', gender:'男', dynasty:'东汉末·三国', traits:['雄猜多疑','机变权谋','豪爽慷慨','爱才如命'],
+   achieve:'统一北方，奠定曹魏基业，建安文学领袖，"治世之能臣，乱世之奸雄"。',
+   d:{E:4,R:5,A:5,G:5,V:3,D:5,O:4,S:4}},
+  {id:9,  name:'诸葛亮', gender:'男', dynasty:'三国', traits:['谨慎缜密','忠诚笃定','鞠躬尽瘁','事必躬亲'],
+   achieve:'蜀汉丞相，提出《隆中对》，六出祁山，中国古代忠臣贤相的典范。',
+   d:{E:3,R:5,A:4,G:5,V:5,D:5,O:3,S:5}},
+  {id:10, name:'关羽', gender:'男', dynasty:'三国', traits:['义薄云天','骄傲自负','重信守诺','刚而自矜'],
+   achieve:'刘备麾下名将，斩颜良、水淹七军，被后世尊为"武圣"。',
+   d:{E:3,R:2,A:4,G:5,V:5,D:4,O:4,S:5}},
+  {id:11, name:'陶渊明', gender:'男', dynasty:'东晋', traits:['淡泊名利','率真自然','不为五斗米折腰'],
+   achieve:'田园诗派创始人，《桃花源记》《归去来兮辞》流传千古。',
+   d:{E:2,R:3,A:2,G:3,V:5,D:5,O:4,S:2}},
+  {id:12, name:'王羲之', gender:'男', dynasty:'东晋', traits:['率性洒脱','从容优雅','名士风度'],
+   achieve:'"书圣"，《兰亭集序》被誉为"天下第一行书"。',
+   d:{E:3,R:4,A:3,G:2,V:4,D:4,O:4,S:3}},
+  {id:13, name:'李白', gender:'男', dynasty:'唐朝', traits:['豪放不羁','自信浪漫','天马行空','蔑视权贵'],
+   achieve:'"诗仙"，中国最伟大的浪漫主义诗人，存诗近千首。',
+   d:{E:5,R:2,A:5,G:3,V:5,D:5,O:5,S:1}},
+  {id:14, name:'杜甫', gender:'男', dynasty:'唐朝', traits:['沉郁顿挫','忧国忧民','悲天悯人','坚忍执着'],
+   achieve:'"诗圣"，中国现实主义诗歌的集大成者，"三吏""三别"传世。',
+   d:{E:2,R:4,A:2,G:4,V:5,D:4,O:1,S:4}},
+  {id:15, name:'狄仁杰', gender:'男', dynasty:'唐朝', traits:['刚正不阿','明察善断','智慧果敢'],
+   achieve:'武周时期名相，力劝武则天复立唐嗣，举荐张柬之等名臣。',
+   d:{E:3,R:5,A:4,G:4,V:4,D:4,O:3,S:4}},
+  {id:16, name:'魏征', gender:'男', dynasty:'唐朝', traits:['耿直刚烈','直言敢谏','从不委曲求全'],
+   achieve:'唐太宗时期诤臣，以"犯颜直谏"著称，辅佐开创"贞观之治"。',
+   d:{E:3,R:5,A:4,G:5,V:5,D:5,O:3,S:4}},
+  {id:17, name:'郭子仪', gender:'男', dynasty:'唐朝', traits:['沉稳宽厚','忠勇果敢','善于隐忍周旋'],
+   achieve:'平定安史之乱的首功之臣，封汾阳王，历经四朝而不倒。',
+   d:{E:3,R:4,A:3,G:4,V:4,D:3,O:4,S:4}},
+  {id:18, name:'颜真卿', gender:'男', dynasty:'唐朝', traits:['刚烈忠贞','大义凛然'],
+   achieve:'书法"颜体"创始人，安史之乱中独倡义讨贼，以忠烈名垂青史。',
+   d:{E:3,R:4,A:4,G:5,V:5,D:5,O:3,S:5}},
+  {id:19, name:'苏轼', gender:'男', dynasty:'北宋', traits:['旷达乐观','率真幽默','无可救药的乐天派'],
+   achieve:'诗词文赋书画无一不佳，豪放词派开创者，唐宋八大家之一。',
+   d:{E:4,R:4,A:3,G:4,V:4,D:4,O:5,S:2}},
+  {id:20, name:'包拯', gender:'男', dynasty:'北宋', traits:['刚直峭刻','疾恶如仇','铁面无私','不苟言笑'],
+   achieve:'以清正廉洁、执法如山闻名，被后世尊为"包青天"。',
+   d:{E:2,R:5,A:4,G:5,V:5,D:5,O:2,S:5}},
+  {id:21, name:'范仲淹', gender:'男', dynasty:'北宋', traits:['胸怀天下','先忧后乐','刚正不阿'],
+   achieve:'庆历新政主持者，《岳阳楼记》"先天下之忧而忧"成为士大夫精神标杆。',
+   d:{E:3,R:5,A:4,G:5,V:5,D:5,O:3,S:5}},
+  {id:22, name:'王安石', gender:'男', dynasty:'北宋', traits:['倔强执拗','敢于革新','不惧非议','一意孤行'],
+   achieve:'主持熙宁变法，唐宋八大家之一，被列宁称为"中国十一世纪的改革家"。',
+   d:{E:3,R:5,A:5,G:5,V:5,D:5,O:3,S:2}},
+  {id:23, name:'岳飞', gender:'男', dynasty:'南宋', traits:['精忠报国','刚烈正直','宁折不弯'],
+   achieve:'南宋抗金名将，郾城大捷威震中原，"三十功名尘与土"传唱千古。',
+   d:{E:3,R:4,A:5,G:5,V:5,D:5,O:3,S:5}},
+  {id:24, name:'辛弃疾', gender:'男', dynasty:'南宋', traits:['豪迈热血','文武兼备','最能打的文化人'],
+   achieve:'豪放词派代表词人，青年时率义军抗金，词作慷慨激昂。',
+   d:{E:4,R:3,A:5,G:5,V:5,D:4,O:4,S:2}},
+  {id:25, name:'文天祥', gender:'男', dynasty:'南宋', traits:['忠贞不屈','气节凛然','视死如归'],
+   achieve:'抗元名臣，《过零丁洋》"人生自古谁无死"成为千古绝唱。',
+   d:{E:3,R:4,A:4,G:5,V:5,D:5,O:3,S:5}},
+  {id:26, name:'成吉思汗', gender:'男', dynasty:'蒙古', traits:['雄才大略','意志如铁','残酷果决'],
+   achieve:'统一蒙古各部，建立横跨欧亚的蒙古帝国，改变世界格局。',
+   d:{E:4,R:4,A:5,G:5,V:3,D:5,O:4,S:2}},
+  {id:27, name:'朱元璋', gender:'男', dynasty:'明朝', traits:['多疑狠辣','勤勉自律','草莽雄才'],
+   achieve:'从乞丐到皇帝，建立明朝，驱逐蒙元，恢复汉人政权。',
+   d:{E:4,R:4,A:5,G:5,V:4,D:5,O:3,S:3}},
+  {id:28, name:'王阳明', gender:'男', dynasty:'明朝', traits:['独立不羁','知行合一','敢于质疑权威'],
+   achieve:'心学集大成者，"致良知""知行合一"影响东亚数百年。',
+   d:{E:3,R:5,A:4,G:5,V:5,D:5,O:4,S:2}},
+  {id:29, name:'唐伯虎', gender:'男', dynasty:'明朝', traits:['风流倜傥','桀骜不驯','才气纵横','放浪形骸'],
+   achieve:'吴门四才子之一，书画诗文俱佳，"江南第一风流才子"。',
+   d:{E:4,R:3,A:3,G:2,V:4,D:5,O:5,S:1}},
+  {id:30, name:'郑和', gender:'男', dynasty:'明朝', traits:['沉稳果敢','开放包容','军事外交兼备'],
+   achieve:'七下西洋，到达东南亚、印度洋、非洲东海岸，世界航海史先驱。',
+   d:{E:3,R:4,A:4,G:4,V:4,D:4,O:4,S:4}},
+  {id:31, name:'于谦', gender:'男', dynasty:'明朝', traits:['刚正不阿','临危不惧','清白正直'],
+   achieve:'北京保卫战力挽狂澜，《石灰吟》"粉身碎骨浑不怕"为其人格写照。',
+   d:{E:2,R:5,A:4,G:5,V:5,D:5,O:3,S:5}},
+  {id:32, name:'张居正', gender:'男', dynasty:'明朝', traits:['强势果断','雷厉风行','务实精干','专权独断'],
+   achieve:'万历首辅，推行"一条鞭法"等改革，史称"万历中兴"。',
+   d:{E:3,R:5,A:5,G:5,V:4,D:5,O:3,S:3}},
+  {id:33, name:'徐霞客', gender:'男', dynasty:'明朝', traits:['好奇探索','独立自由','不畏艰险','不随流俗'],
+   achieve:'游历三十余年，著《徐霞客游记》，中国地理学开拓者。',
+   d:{E:3,R:4,A:4,G:4,V:5,D:5,O:4,S:1}},
+  {id:34, name:'纪晓岚', gender:'男', dynasty:'清朝', traits:['机智诙谐','博闻强识','圆融通达','内心正直'],
+   achieve:'主持编纂《四库全书》，著《阅微草堂笔记》。',
+   d:{E:4,R:5,A:3,G:3,V:3,D:4,O:5,S:3}},
+  {id:35, name:'和珅', gender:'男', dynasty:'清朝', traits:['精明圆滑','善于逢迎','贪得无厌','工于心计'],
+   achieve:'乾隆朝权臣，虽以巨贪闻名，但理财与外交才能突出。',
+   d:{E:4,R:4,A:4,G:3,V:1,D:4,O:4,S:2}},
+  {id:36, name:'妇好', gender:'女', dynasty:'商朝', traits:['英武果敢','独立强悍'],
+   achieve:'中国历史上第一位有文字记载的女性军事统帅，率军征伐四方。',
+   d:{E:4,R:4,A:5,G:5,V:4,D:5,O:4,S:4}},
+  {id:37, name:'宣太后芈八子', gender:'女', dynasty:'战国', traits:['杀伐决断','精明强悍','麻辣太后'],
+   achieve:'中国历史上第一位被称为"太后"的人，执政秦国三十余年。',
+   d:{E:4,R:4,A:5,G:5,V:3,D:5,O:4,S:3}},
+  {id:38, name:'吕雉', gender:'女', dynasty:'西汉', traits:['刚毅果敢','狠辣决绝'],
+   achieve:'中国第一位有记载的皇后，佐刘邦定天下，称制期间天下晏然。',
+   d:{E:3,R:5,A:5,G:5,V:3,D:5,O:3,S:4}},
+  {id:39, name:'卓文君', gender:'女', dynasty:'西汉', traits:['敢爱敢恨','独立果敢','不顾世俗私奔'],
+   achieve:'与司马相如的爱情传奇家喻户晓，《白头吟》才情动人。',
+   d:{E:4,R:2,A:4,G:3,V:5,D:5,O:4,S:1}},
+  {id:40, name:'王昭君', gender:'女', dynasty:'西汉', traits:['坚忍大义','从容淡定'],
+   achieve:'出塞和亲匈奴，换得汉匈数十年和平，"落雁"之美传颂千古。',
+   d:{E:2,R:3,A:3,G:4,V:5,D:4,O:3,S:4}},
+  {id:41, name:'班昭', gender:'女', dynasty:'东汉', traits:['温婉坚毅','博学多才'],
+   achieve:'续写《汉书》，中国第一位女性历史学家，被誉为"天下第一才女"。',
+   d:{E:2,R:5,A:3,G:4,V:4,D:4,O:4,S:5}},
+  {id:42, name:'蔡文姬', gender:'女', dynasty:'东汉末', traits:['才情卓绝','命运多舛','坚韧而深情'],
+   achieve:'著名女诗人，《胡笳十八拍》《悲愤诗》传世。',
+   d:{E:2,R:4,A:2,G:4,V:5,D:4,O:2,S:4}},
+  {id:43, name:'谢道韫', gender:'女', dynasty:'东晋', traits:['聪慧机敏','从容大方','名士风度'],
+   achieve:'以"未若柳絮因风起"名震一时，"咏絮之才"成为才女代名词。',
+   d:{E:3,R:5,A:3,G:3,V:4,D:5,O:4,S:3}},
+  {id:44, name:'花木兰', gender:'女', dynasty:'南北朝', traits:['勇敢孝顺','淡泊名利','忠孝节义兼备'],
+   achieve:'女扮男装代父从军十二年，巾帼英雄的永恒典范。',
+   d:{E:3,R:3,A:5,G:5,V:5,D:5,O:4,S:4}},
+  {id:45, name:'武则天', gender:'女', dynasty:'唐朝', traits:['心狠手辣','权谋无双','知人善任','气魄非凡'],
+   achieve:'中国历史上唯一的女皇帝，上承贞观、下启开元。',
+   d:{E:4,R:5,A:5,G:5,V:4,D:5,O:4,S:3}},
+  {id:46, name:'上官婉儿', gender:'女', dynasty:'唐朝', traits:['才华横溢','精明善谋','游走于权力核心'],
+   achieve:'武则天时期"巾帼宰相"，主持文坛，称量天下才士。',
+   d:{E:4,R:5,A:4,G:4,V:4,D:5,O:4,S:3}},
+  {id:47, name:'杨玉环', gender:'女', dynasty:'唐朝', traits:['娇媚天真','热爱艺术','浪漫而任性'],
+   achieve:'唐代宫廷音乐舞蹈家，"四大美女"之一，与唐玄宗的爱情故事流传千古。',
+   d:{E:4,R:1,A:2,G:2,V:2,D:3,O:5,S:3}},
+  {id:48, name:'李清照', gender:'女', dynasty:'宋', traits:['傲骨铮铮','敢爱敢恨','婉约中藏刚烈'],
+   achieve:'"千古第一才女"，婉约词派代表，词作被誉为"别是一家"。',
+   d:{E:3,R:4,A:3,G:4,V:5,D:5,O:3,S:2}},
+  {id:49, name:'梁红玉', gender:'女', dynasty:'南宋', traits:['英武刚烈','果敢善战'],
+   achieve:'抗金女英雄，黄天荡之战擂鼓助战，与韩世忠共守江淮。',
+   d:{E:4,R:3,A:5,G:5,V:5,D:5,O:4,S:4}},
+  {id:50, name:'秦良玉', gender:'女', dynasty:'明朝', traits:['忠勇刚烈','智谋双全'],
+   achieve:'明朝唯一以战功封侯的女将军，率白杆兵南征北战。',
+   d:{E:4,R:4,A:5,G:5,V:5,D:5,O:4,S:4}}
+];
+
+/* =========================================================
+   四、动态计算每个维度的最大可能原始分
+   ========================================================= */
+const MAX_RAW = {};
+DIMS.forEach(d => {
+  let total = 0;
+  QUESTIONS.forEach(q => {
+    let m = 0;
+    q.opts.forEach(o => {
+      const v = o.s[d] || 0;
+      if (v > m) m = v;
+    });
+    total += m;
+  });
+  MAX_RAW[d] = total;
+});
+
+/* =========================================================
+   五、状态与流程控制
+   ========================================================= */
+let currentIndex = 0;
+const answers = new Array(QUESTIONS.length).fill(null);
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function startQuiz(){
+  currentIndex = 0;
+  answers.fill(null);
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[currentIndex];
+  document.getElementById('quizIdx').textContent =
+    String(currentIndex+1).padStart(2,'0') + ' / ' + QUESTIONS.length;
+  document.getElementById('quizCat').textContent = q.cat;
+  document.getElementById('progressBar').style.width =
+    ((currentIndex) / QUESTIONS.length * 100) + '%';
+  document.getElementById('qText').textContent = q.q;
+
+  const box = document.getElementById('opts');
+  box.innerHTML = '';
+  const keys = ['A','B','C','D'];
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt' + (answers[currentIndex] === i ? ' sel' : '');
+    btn.innerHTML = '<span class="opt-key">'+keys[i]+'</span><span>'+o.t+'</span>';
+    btn.onclick = () => selectOption(i);
+    box.appendChild(btn);
+  });
+
+  document.getElementById('btnPrev').disabled = (currentIndex === 0);
+}
+
+function selectOption(i){
+  answers[currentIndex] = i;
+  document.querySelectorAll('#opts .opt').forEach((el, idx) => {
+    el.classList.toggle('sel', idx === i);
+  });
+  setTimeout(() => {
+    if (currentIndex < QUESTIONS.length - 1){
+      currentIndex++;
+      renderQuestion();
+    } else {
+      document.getElementById('progressBar').style.width = '100%';
+      finishQuiz();
+    }
+  }, 220);
+}
+
+function prevQuestion(){
+  if (currentIndex > 0){
+    currentIndex--;
+    renderQuestion();
+  }
+}
+
+/* =========================================================
+   六、计分与匹配
+   ========================================================= */
+function calcScores(){
+  const raw = {};
+  DIMS.forEach(d => raw[d] = 0);
+  answers.forEach((ans, qi) => {
+    if (ans === null) return;
+    const s = QUESTIONS[qi].opts[ans].s;
+    Object.keys(s).forEach(k => { raw[k] += s[k]; });
+  });
+
+  const final = {};
+  DIMS.forEach(d => {
+    const m = MAX_RAW[d] || 1;
+    let v = 1 + (raw[d] / m) * 4;
+    v = Math.max(1, Math.min(5, v));
+    final[d] = Math.round(v * 10) / 10;
+  });
+  return final;
+}
+
+function calcDistance(a, b){
+  let sum = 0;
+  DIMS.forEach(d => { sum += Math.pow(a[d] - b[d], 2); });
+  return Math.sqrt(sum);
+}
+
+function matchCharacter(final){
+  const list = CHARACTERS.map(c => ({
+    char: c,
+    dist: calcDistance(final, c.d)
+  })).sort((x, y) => x.dist - y.dist);
+
+  // 并列处理：距离相近时，比较 E/G/V 三个核心维度
+  const best = list[0];
+  const ties = list.filter(x => x.dist - best.dist < 0.05);
+  if (ties.length > 1){
+    ties.sort((x, y) => {
+      const coreDiff = (c) => 
+        Math.abs(final.E - c.char.d.E) +
+        Math.abs(final.G - c.char.d.G) +
+        Math.abs(final.V - c.char.d.V);
+      return coreDiff(x) - coreDiff(y);
+    });
+    return ties[0].char;
+  }
+  return best.char;
+}
+
+function toPercent(dist){
+  let p = Math.round(100 - dist * 7);
+  return Math.max(55, Math.min(98, p));
+}
+
+function finishQuiz(){
+  showScreen('screen-loading');
+  setTimeout(() => {
+    const final = calcScores();
+    const list = CHARACTERS.map(c => ({
+      char: c, dist: calcDistance(final, c.d)
+    })).sort((a,b) => a.dist - b.dist);
+
+    const winner = matchCharacter(final);
+    renderResult(winner, list, final);
+    showScreen('screen-result');
+  }, 1600);
+}
+
+/* =========================================================
+   七、结果渲染
+   ========================================================= */
+function renderResult(char, list, final){
+  document.getElementById('rName').textContent = char.name;
+  document.getElementById('rMeta').innerHTML =
+    '<span>'+char.dynasty+'</span>·<span>'+char.gender+'性</span>';
+
+  const winDist = calcDistance(final, char.d);
+  document.getElementById('rMatch').textContent =
+    '性格匹配度 ' + toPercent(winDist) + '%';
+
+  // 雷达图
+  document.getElementById('radarBox').innerHTML = buildRadar(final);
+
+  // 性格标签
+  const traitBox = document.getElementById('rTraits');
+  traitBox.innerHTML = '';
+  char.traits.forEach(t => {
+    const s = document.createElement('span');
+    s.className = 'trait';
+    s.textContent = t;
+    traitBox.appendChild(s);
+  });
+
+  // 成就
+  document.getElementById('rAchieve').textContent = char.achieve;
+
+  // 性格画像描述
+  document.getElementById('rDesc').textContent = buildDesc(final);
+
+  // 其他相似人物
+  const alsoBox = document.getElementById('rAlso');
+  alsoBox.innerHTML = '';
+  list.filter(x => x.char.id !== char.id).slice(0, 3).forEach(x => {
+    const row = document.createElement('div');
+    row.className = 'also-item';
+    row.innerHTML = '<span>' + x.char.name +
+      '　<span style="color:#a8967a;font-size:12px;">' + x.char.dynasty + '</span></span>' +
+      '<span class="also-pct">' + toPercent(x.dist) + '%</span>';
+    alsoBox.appendChild(row);
+  });
+}
+
+function buildDesc(final){
+  // 找出最高和最低的两个维度
+  const sorted = DIMS.slice().sort((a,b) => final[b] - final[a]);
+  const high = sorted.slice(0, 3);
+  const low = sorted.slice(-2);
+
+  const highTxt = high.map(d => {
+    const map = {
+      E:'在人群中你游刃有余，能量来自与他人的互动',
+      R:'你习惯用理性拆解问题，很少被情绪牵着走',
+      A:'你敢于下注，机会来了不会犹豫太久',
+      G:'你认定的事很难被撼动，骨子里有股倔劲',
+      V:'你在意意义感，不愿只为眼前利益活着',
+      D:'你习惯自己拿主意，不喜欢被安排',
+      O:'你有一种天然的松弛感，能把坏事笑着讲出来',
+      S:'你尊重规则与传统，做事讲究分寸和章法'
+    };
+    return map[d];
+  }).join('；');
+
+  const lowTxt = low.map(d => {
+    const map = {
+      E:'不太热衷热闹场合',
+      R:'有时更愿意跟着感觉走',
+      A:'遇事更倾向稳妥',
+      G:'懂得适时变通妥协',
+      V:'更看重现实与结果',
+      D:'愿意依赖和配合他人',
+      O:'心思偏深沉，容易想得多',
+      S:'不太受条条框框约束'
+    };
+    return map[d];
+  }).join('，');
+
+  return highTxt + '。相对而言，你' + lowTxt + '。整体来看，你的性格与' +
+    '这位历史人物有着相似的底色，但你有自己的活法。';
+}
+
+/* =========================================================
+   八、雷达图（SVG 动态生成）
+   ========================================================= */
+function buildRadar(final){
+  const cx = 150, cy = 148, R = 100;
+  const n = DIMS.length;
+
+  const angle = i => -Math.PI/2 + i * (2*Math.PI/n);
+  const pt = (i, k) => [
+    cx + Math.cos(angle(i)) * R * k,
+    cy + Math.sin(angle(i)) * R * k
+  ];
+
+  let svg = '<svg viewBox="0 0 300 300" width="100%" style="max-width:320px;display:block;margin:0 auto;">';
+
+  // 网格
+  [0.25, 0.5, 0.75, 1].forEach(k => {
+    const pts = DIMS.map((_, i) => pt(i, k).join(',')).join(' ');
+    svg += '<polygon points="' + pts + '" fill="none" stroke="#e5dcc8" stroke-width="1"/>';
+  });
+
+  // 轴线
+  DIMS.forEach((_, i) => {
+    const p = pt(i, 1);
+    svg += '<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'" stroke="#e5dcc8" stroke-width="1"/>';
+  });
+
+  // 数据多边形
+  const dataPts = DIMS.map((d, i) => {
+    const v = (final[d] - 1) / 4;
+    return pt(i, Math.max(v, 0.06)).join(',');
+  }).join(' ');
+  svg += '<polygon points="'+dataPts+'" fill="rgba(178,60,50,0.22)" stroke="#b23c32" stroke-width="2" stroke-linejoin="round"/>';
+
+  // 数据点
+  DIMS.forEach((d, i) => {
+    const v = (final[d] - 1) / 4;
+    const p = pt(i, Math.max(v, 0.06));
+    svg += '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3" fill="#b23c32"/>';
+  });
+
+  // 标签
+  DIMS.forEach((d, i) => {
+    const a = angle(i);
+    const lx = cx + Math.cos(a) * (R + 24);
+    const ly = cy + Math.sin(a) * (R + 24);
+    svg += '<text x="'+lx+'" y="'+ly+'" text-anchor="middle" dominant-baseline="middle" ' +
+           'font-size="12" fill="#7a6748" font-family="inherit">' + DIM_SHORT[d] + '</text>';
+    svg += '<text x="'+lx+'" y="'+(ly+13)+'" text-anchor="middle" dominant-baseline="middle" ' +
+           'font-size="10" fill="#b23c32">' + final[d].toFixed(1) + '</text>';
+  });
+
+  svg += '</svg>';
+  return svg;
+}
+
+/* =========================================================
+   九、重新开始 & 分享
+   ========================================================= */
+function restart(){
+  currentIndex = 0;
+  answers.fill(null);
+  showScreen('screen-home');
+}
+
+function shareResult(){
+  const name = document.getElementById('rName').textContent;
+  const meta = document.getElementById('rMeta').textContent;
+  const match = document.getElementById('rMatch').textContent;
+  const text = '我测出来最像【' + name + '】（' + meta + '），' + match +
+               '！你也来测测你是哪位中国古代人物？';
+
+  if (navigator.share){
+    navigator.share({ title:'中国古代人物性格评测', text: text })
+      .catch(() => copyText(text));
+  } else {
+    copyText(text);
+  }
+}
+
+function copyText(text){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try{
+    document.execCommand('copy');
+    alert('结果文案已复制，快去分享给朋友吧！\n\n' + text);
+  }catch(e){
+    alert(text);
+  }
+  document.body.removeChild(ta);
+}
+</script>
+</body>
+</html>
